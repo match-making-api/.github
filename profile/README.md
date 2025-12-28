@@ -1,85 +1,134 @@
-# Match making
+# Match Making API
 
-Tenacity Scheme:
-```sh
-1) Tenant
-2) Client
-3) Group
-4) User
+A team-vs-team matchmaking system built with Domain-Driven Design principles, providing robust scheduling, conflict detection, and game management capabilities.
 
-         Tenant
-            |
-            |
-           / \
-         /     \
-   Client      Group
-      |        / |
-      |      /   |
-      |    /     |
-      |  /      User
-      |/
-      |
-      |
-      User
+## Tenacity Scheme
+
+```mermaid
+graph TD
+    Tenant[Tenant]
+    Client[Client]
+    Group[Group]
+    User[User]
+    
+    Tenant --> Client
+    Tenant --> Group
+    Client --> User
+    Group --> User
 ```
 
 ## Domain-Driven Design for a Team-vs-Team Matchmaking System
 
 ### Bounded Contexts
 
-**1. Matchmaking**
+**1. Matchmaking (Pairing Domain)**
 * **Core Responsibilities:**
-   - Managing player and team queues.
-   - Applying matchmaking algorithms to pair suitable teams.
-   - Scheduling matches.
-   - Handling matchmaking preferences and constraints.
+   - Managing player and team queues (Pools)
+   - Applying matchmaking algorithms to pair suitable teams based on schedule compatibility
+   - Creating and managing matches (Pairs)
+   - Automatic conflict detection and verification
+   - Handling matchmaking preferences and constraints
+* **Key Features:**
+   - Schedule-based matching with conflict detection
+   - Automatic conflict flagging and notification system
+   - Admin conflict resolution capabilities
+   - Performance-optimized matching with caching and parallel processing
 * **Upstream:**
-   - Game Server: Receives match details and player information.
-   - Player Profile Service: Fetches player data (skill rating, preferences, etc.).
+   - Game Server: Receives match details and player information
+   - Player Profile Service: Fetches player data (skill rating, preferences, etc.)
 * **Downstream:**
-   - Game Server: Sends match details to initiate the game.
-   - Player Profile Service: Updates player statistics and preferences.
+   - Game Server: Sends match details to initiate the game
+   - Player Profile Service: Updates player statistics and preferences after matches
 
-**2. Player Profile**
+**2. Game Management**
 * **Core Responsibilities:**
-   - Storing and managing player profiles.
-   - Calculating and updating player skill ratings.
-   - Tracking player preferences and settings.
-* **Upstream:**
-   - Matchmaking: Fetches player data for matchmaking decisions.
-* **Downstream:**
-   - Matchmaking: Updates player statistics and preferences after matches.
+   - Managing available games for matchmaking
+   - Managing game modes and regions
+   - Validating game configurations
+* **Key Features:**
+   - CRUD operations for games, game modes, and regions
+   - RESTful API endpoints with OpenAPI documentation
+   - MongoDB integration for persistence
+
+**3. Schedules Domain**
+* **Core Responsibilities:**
+   - Managing player and party availability schedules
+   - Handling schedule constraints
+   - Appointment management
+* **Key Features:**
+   - Flexible schedule configuration with timeframes
+   - Schedule compatibility checking
+   - Appointment creation and management
 
 ### Domain Entities and Responsibilities
 
-**Matchmaking Domain:**
+**Matchmaking (Pairing) Domain:**
 
-* **Lobby:**
-   (?) Possible Region(Locale), Place(), 
-* **Pool:**
-   √ A subset of players or teams within a lobby, often filtered by specific criteria.
-* **Pair:**
-   √ Represents a pair of teams matched for a game.
-   √ Stores information about the matched teams, the scheduled time, and other relevant details.
-* **Inquiry:**
-   √ A request from a player or team to be matched.
-   (?) Includes information about the player's or team's preferences and constraints.
-* **Commitment:**
-   √ A player or team's commitment to a specific match.
-   √ Involves accepting a match offer or declining it.
-* **Notification:**
-   √ A message sent to players or teams about match-related information.
-* **Party:**
-   √ A group of players who queue together as a team.
-* **Peer:**
-   √ An individual player within a party.
-* **Schedule:**
-   X A plan for a sequence of matches.
-   X Includes information about match times, durations, and locations.
-* **Appointment:**
-   X A specific match scheduled for a particular time and duration.
-* **Availability:**
-   √ The times when a player or team is available to play.
-* **Constraint:**
-   √ A limitation or restriction on a player's or team's availability or preferences.
+* **Pool:** √
+   - A subset of players or teams within a lobby, filtered by specific criteria
+   - Manages party queues with FIFO ordering
+   - Supports concurrent access with mutex-based synchronization
 
+* **Pair:** √
+   - Represents a group of teams matched for a game
+   - Stores information about matched teams, conflict status, and metadata
+   - Tracks conflict status (None, Flagged, Resolved) for schedule conflict management
+
+* **Inquiry:** √
+   - A request from a player or team to be matched
+   - Includes preferences and constraints
+
+* **Commitment:** √
+   - A player or team's commitment to a specific match
+   - Handles match acceptance or decline
+
+* **Notification:** √
+   - Messages sent to players or teams about match-related information
+   - Supports conflict notifications and match updates
+
+**Parties Domain:**
+
+* **Party:** √
+   - A group of players who queue together as a team
+   - Base entity for team formation
+
+* **Peer:** √
+   - An individual player within a party
+   - Represents single player entities
+
+**Schedules Domain:**
+
+* **Schedule:** √
+   - Defines availability and constraints for parties or peers
+   - Supports flexible date options (months, weekdays, days, timeframes)
+   - Two types: Availability and Constraint
+
+* **Appointment:** √
+   - A specific match scheduled for a particular time and duration
+   - Links parties and peers to scheduled matches
+
+* **Availability:** √
+   - The times when a player or team is available to play
+   - Used for schedule compatibility checking
+
+* **Constraint:** √
+   - Limitations or restrictions on availability or preferences
+   - Used to filter matchmaking options
+
+**Lobbies Domain:**
+
+* **Lobby:** 
+   - Represents game lobbies with region support
+   - Links to game entities and regions
+
+**Game Domain:**
+
+* **Game:** √
+   - Game configuration with team settings, match settings, and matchmaking preferences
+   - Supports multiple game modes and regions
+
+* **GameMode:** √
+   - Specific game mode configurations
+
+* **Region:** √
+   - Geographic or logical regions for matchmaking
