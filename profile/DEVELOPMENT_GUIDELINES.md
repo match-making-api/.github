@@ -117,27 +117,44 @@ Each module has a well-defined responsibility, following the SOLID principle.
 - Admin conflict resolution with override capabilities
 - Notification system interface for conflict alerts
 
-#### 2. **Performance Optimizations**
+#### 2. **Manual Invitation Management**
+- Admin-created invitations for users to join matches or events
+- Full invitation lifecycle management (create, update, revoke, accept, decline)
+- Status tracking with timestamps (Pending, Accepted, Declined, Expired, Revoked)
+- Expiration date management and validation
+- Ownership validation for user operations
+- Comprehensive REST API with 7 endpoints
+- Notification system interface for invitation events
+- Complete test coverage (32+ test cases)
+
+#### 3. **Performance Optimizations**
 - Schedule matching with caching and memoization
 - Parallel processing for large party sets
 - Efficient compatibility checking algorithms
 
-#### 3. **Validation & Error Handling**
+#### 4. **Validation & Error Handling**
 - Comprehensive schedule validation
 - Graceful database error handling
 - Descriptive error messages for debugging
 - Input validation at all layers
 
-#### 4. **REST API Infrastructure**
+#### 5. **REST API Infrastructure**
 - Health check endpoint
 - Resource context middleware
 - Authentication middleware foundation
 - OpenAPI/Swagger documentation
 
-#### 5. **Game Management**
+#### 6. **Game Management**
 - Full CRUD operations for games, game modes, and regions
 - MongoDB repository implementations
 - Comprehensive unit test coverage
+
+#### 7. **REST API for Invitations**
+- Complete REST API with 7 invitation endpoints
+- Admin-only operations (create, update, revoke)
+- User operations with ownership validation (accept, decline)
+- Comprehensive OpenAPI documentation
+- Proper security checks and error handling
 
 ### Testing Strategy
 

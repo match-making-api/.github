@@ -32,6 +32,7 @@ graph TD
    - Schedule-based matching with conflict detection
    - Automatic conflict flagging and notification system
    - Admin conflict resolution capabilities
+   - Manual invitation management system (create, update, revoke, accept, decline)
    - Performance-optimized matching with caching and parallel processing
 * **Upstream:**
    - Game Server: Receives match details and player information
@@ -82,9 +83,17 @@ graph TD
    - A player or team's commitment to a specific match
    - Handles match acceptance or decline
 
+* **Invitation:** √
+   - Manual invitations created by administrators for users to join matches or events
+   - Supports status tracking (Pending, Accepted, Declined, Expired, Revoked)
+   - Includes expiration date management and notification integration
+   - Allows administrators to create, update, and revoke invitations
+   - Enables users to accept or decline invitations with proper ownership validation
+
 * **Notification:** √
    - Messages sent to players or teams about match-related information
    - Supports conflict notifications and match updates
+   - Supports invitation-related notifications (created, accepted, declined, revoked)
 
 **Parties Domain:**
 
